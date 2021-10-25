@@ -22,9 +22,9 @@ namespace DapperLib
             List<Department> departments = new List<Department>();
             using (IDbConnection conn = _connectionFactory.GetConnection)
             {
-                departments = conn.Query<Department>("Select * From Departments").ToList();
-                return departments;
-            }          
+                departments = conn.Query<Department>("Select * From Departments").ToList();               
+            }
+            return departments;
         }
 
         public Department GetDepartmentsById(int deptId)
@@ -32,12 +32,12 @@ namespace DapperLib
             var SqlQuery = @"Select * From Departments WHERE deptId = @deptId";
             var param = new DynamicParameters();
             param.Add("@deptId", deptId);
-
+            Department department = null;
             using (IDbConnection conn = _connectionFactory.GetConnection)
             {
-                var department = conn.QueryFirstOrDefault<Department>(SqlQuery, param);
-                return department;
+                department = conn.QueryFirstOrDefault<Department>(SqlQuery, param);              
             }
+            return department;
         }
 
         public bool AddDepartment(Department department)
@@ -50,12 +50,14 @@ namespace DapperLib
             param.Add("@Name", department.Name);
             try
             {
-                var rowsAffected = SqlMapper.Execute(_connectionFactory.GetConnection,
-                procName, param, commandType: CommandType.StoredProcedure);
-                //deptId = param.Get<int>("@DeptId");
-                if (rowsAffected > 0)
+                using (IDbConnection conn = _connectionFactory.GetConnection)
                 {
-                    IsSuccess = true;
+                    var rowsAffected = SqlMapper.Execute(conn, procName, param, commandType: CommandType.StoredProcedure);
+                    //deptId = param.Get<int>("@DeptId");
+                    if (rowsAffected > 0)
+                    {
+                        IsSuccess = true;
+                    }
                 }
             }
             finally
@@ -74,11 +76,13 @@ namespace DapperLib
             param.Add("@Name", department.Name);     
             try
             {
-                var rowsAffected = SqlMapper.Execute(_connectionFactory.GetConnection,
-                procName, param, commandType: CommandType.StoredProcedure);
-                if (rowsAffected > 0)
+                using (IDbConnection conn = _connectionFactory.GetConnection)
                 {
-                    IsSuccess = true;
+                    var rowsAffected = SqlMapper.Execute(conn, procName, param, commandType: CommandType.StoredProcedure);
+                    if (rowsAffected > 0)
+                    {
+                        IsSuccess = true;
+                    }
                 }
             }
             finally

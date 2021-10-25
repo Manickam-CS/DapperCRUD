@@ -46,7 +46,7 @@ namespace DapperLib
         {
             string procName = "usp_AddEmployee";
             var param = new DynamicParameters();
-            bool IsSuccess = true;
+            bool IsSuccess = false;
             param.Add("@EmpId", employee.EmpId, null, ParameterDirection.Output);
             param.Add("@Name", employee.Name);
             param.Add("@Address", employee.Address);
@@ -57,7 +57,7 @@ namespace DapperLib
                 using (IDbConnection conn = _connectionFactory.GetConnection)
                 {
                     var rowsAffected = SqlMapper.Execute(conn, procName, param, commandType: CommandType.StoredProcedure);
-                    if (rowsAffected <= 0)
+                    if (rowsAffected > 0)
                     {
                         IsSuccess = true;
                     }
@@ -89,7 +89,7 @@ namespace DapperLib
                 using (IDbConnection conn = _connectionFactory.GetConnection)
                 {
                     var rowsAffected = SqlMapper.Execute(conn, procName, param, commandType: CommandType.StoredProcedure);
-                    if (rowsAffected <= 0)
+                    if (rowsAffected > 0)
                     {
                         IsSuccess = true;
                     }
@@ -105,7 +105,7 @@ namespace DapperLib
 
         public bool DeleteEmployee(int empId)
         {
-            bool IsDeleted = true;
+            bool IsDeleted = false;
             var SqlQuery = @"Delete From [dbo].[Employees] WHERE EmpId = @empId";
             var param = new DynamicParameters();
             param.Add("@empId", empId);
@@ -113,9 +113,9 @@ namespace DapperLib
             using (IDbConnection conn = _connectionFactory.GetConnection)
             {
                 var rowsaffected = conn.Execute(SqlQuery, param);
-                if (rowsaffected <= 0)
+                if (rowsaffected > 0)
                 {
-                    IsDeleted = false;
+                    IsDeleted = true;
                 }
             }
             return IsDeleted;

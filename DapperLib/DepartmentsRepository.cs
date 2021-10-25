@@ -95,7 +95,7 @@ namespace DapperLib
 
         public bool DeleteDepartment(int deptId)
         {
-            bool IsDeleted = true;
+            bool IsDeleted = false;
             var SqlQuery = @"Delete From Departments WHERE deptId = @deptId";
             var param = new DynamicParameters();
             param.Add("@deptId", deptId);
@@ -103,9 +103,9 @@ namespace DapperLib
             using (IDbConnection conn = _connectionFactory.GetConnection)
             {
                 var rowsaffected = conn.Execute(SqlQuery, param);
-                if (rowsaffected <= 0)
+                if (rowsaffected > 0)
                 {
-                    IsDeleted = false;
+                    IsDeleted = true;
                 }
             }
             return IsDeleted;
